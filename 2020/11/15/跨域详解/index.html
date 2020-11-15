@@ -24,16 +24,16 @@
     var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta name="description" content="什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器同源策略限制的一类请求场景。">
+  <meta name="description" content="什么是跨域 浏览器的同源策略 同源策略定义 同源 同源定义 跨域行为 同源策略的好处   解决跨域问题的方法 JSONP Node.js中间件 Nginx反向代理（推荐） CORS跨域资源共享（推荐） 定义 CORS头字段 CORS请求分类 限制 后端实现     总结 参考链接  什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常">
 <meta property="og:type" content="article">
 <meta property="og:title" content="跨域详解">
 <meta property="og:url" content="http://example.com/2020/11/15/%E8%B7%A8%E5%9F%9F%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="ppf爱敲代码">
-<meta property="og:description" content="什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器同源策略限制的一类请求场景。">
+<meta property="og:description" content="什么是跨域 浏览器的同源策略 同源策略定义 同源 同源定义 跨域行为 同源策略的好处   解决跨域问题的方法 JSONP Node.js中间件 Nginx反向代理（推荐） CORS跨域资源共享（推荐） 定义 CORS头字段 CORS请求分类 限制 后端实现     总结 参考链接  什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/11/15/ch9xmnNy7rvYzfo.png">
 <meta property="article:published_time" content="2020-11-15T04:40:08.000Z">
-<meta property="article:modified_time" content="2020-11-15T05:00:27.058Z">
+<meta property="article:modified_time" content="2020-11-15T05:24:15.632Z">
 <meta property="article:author" content="Lawrencezr">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2020/11/15/ch9xmnNy7rvYzfo.png">
@@ -170,7 +170,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是跨域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">浏览器的同源策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">同源策略定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E5%AE%9A%E4%B9%89"><span class="nav-number">2.2.</span> <span class="nav-text">同源定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F%E8%A1%8C%E4%B8%BA"><span class="nav-number">2.3.</span> <span class="nav-text">跨域行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">2.4.</span> <span class="nav-text">同源策略的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">解决跨域问题的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">3.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-js%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">Node.js中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">Nginx反向代理（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">CORS跨域资源共享（推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">3.4.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E5%A4%B4%E5%AD%97%E6%AE%B5"><span class="nav-number">3.4.2.</span> <span class="nav-text">CORS头字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E8%AF%B7%E6%B1%82%E5%88%86%E7%B1%BB"><span class="nav-number">3.4.3.</span> <span class="nav-text">CORS请求分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E5%88%B6"><span class="nav-number">3.4.4.</span> <span class="nav-text">限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.4.5.</span> <span class="nav-text">后端实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是跨域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">浏览器的同源策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">同源策略定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90"><span class="nav-number">2.2.</span> <span class="nav-text">同源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E5%AE%9A%E4%B9%89"><span class="nav-number">2.3.</span> <span class="nav-text">同源定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F%E8%A1%8C%E4%B8%BA"><span class="nav-number">2.4.</span> <span class="nav-text">跨域行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">2.5.</span> <span class="nav-text">同源策略的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">解决跨域问题的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">3.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-js%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">Node.js中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">Nginx反向代理（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">CORS跨域资源共享（推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">3.4.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E5%A4%B4%E5%AD%97%E6%AE%B5"><span class="nav-number">3.4.2.</span> <span class="nav-text">CORS头字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E8%AF%B7%E6%B1%82%E5%88%86%E7%B1%BB"><span class="nav-number">3.4.3.</span> <span class="nav-text">CORS请求分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E5%88%B6"><span class="nav-number">3.4.4.</span> <span class="nav-text">限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.4.5.</span> <span class="nav-text">后端实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -264,7 +264,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2020-11-15 12:40:08 / 修改时间：13:00:27" itemprop="dateCreated datePublished" datetime="2020-11-15T12:40:08+08:00">2020-11-15</time>
+      <time title="创建时间：2020-11-15 12:40:08 / 修改时间：13:24:15" itemprop="dateCreated datePublished" datetime="2020-11-15T12:40:08+08:00">2020-11-15</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -284,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>9.8k</span>
+      <span>10k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
@@ -302,9 +302,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p><strong>广义上</strong>跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器<strong>同源策略</strong>限制的一类请求场景。</p>
+        <ul>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F">什么是跨域</a></li>
+<li><a href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5">浏览器的同源策略</a><ul>
+<li><a href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E5%AE%9A%E4%B9%89">同源策略定义</a></li>
+<li><a href="#%E5%90%8C%E6%BA%90">同源</a></li>
+<li><a href="#%E5%90%8C%E6%BA%90%E5%AE%9A%E4%B9%89">同源定义</a></li>
+<li><a href="#%E8%B7%A8%E5%9F%9F%E8%A1%8C%E4%B8%BA">跨域行为</a></li>
+<li><a href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E7%9A%84%E5%A5%BD%E5%A4%84">同源策略的好处</a></li>
+</ul>
+</li>
+<li><a href="#%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E6%96%B9%E6%B3%95">解决跨域问题的方法</a><ul>
+<li><a href="#jsonp">JSONP</a></li>
+<li><a href="#nodejs%E4%B8%AD%E9%97%B4%E4%BB%B6">Node.js中间件</a></li>
+<li><a href="#nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89">Nginx反向代理（推荐）</a></li>
+<li><a href="#cors%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89">CORS跨域资源共享（推荐）</a><ul>
+<li><a href="#%E5%AE%9A%E4%B9%89">定义</a></li>
+<li><a href="#cors%E5%A4%B4%E5%AD%97%E6%AE%B5">CORS头字段</a></li>
+<li><a href="#cors%E8%AF%B7%E6%B1%82%E5%88%86%E7%B1%BB">CORS请求分类</a></li>
+<li><a href="#%E9%99%90%E5%88%B6">限制</a></li>
+<li><a href="#%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0">后端实现</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+<li><a href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5">参考链接</a></li>
+</ul>
+<h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p><strong>广义上</strong>跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器<strong>同源策略</strong>限制的一类请求场景。</p>
 <a id="more"></a>
 <h2 id="浏览器的同源策略"><a href="#浏览器的同源策略" class="headerlink" title="浏览器的同源策略"></a>浏览器的同源策略</h2><h3 id="同源策略定义"><a href="#同源策略定义" class="headerlink" title="同源策略定义"></a>同源策略定义</h3><p>同源策略/SOP（Same origin policy）是一种约定，由Netscape公司1995年引入浏览器中，它用于限制一个源的文档或者它加载的脚本如何能与另一个源的资源进行交互。</p>
+<h3 id="同源"><a href="#同源" class="headerlink" title="同源"></a>同源</h3><p>差点迟到</p>
 <h3 id="同源定义"><a href="#同源定义" class="headerlink" title="同源定义"></a>同源定义</h3><p>同源是指两个URL”协议+域名+端口”三者相同，即便两个不同的域名指向同一个ip地址，也非同源。假设有一个URL：<a target="_blank" rel="noopener" href="http://lotus.hotel.test.sankuai.com,/">http://lotus.hotel.test.sankuai.com，</a></p>
 <table>
 <thead>
