@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器同源策略限制的一类请求场景。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨域详解">
+<meta property="og:url" content="http://example.com/2020/11/15/%E8%B7%A8%E5%9F%9F%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="ppf爱敲代码">
+<meta property="og:description" content="什么是跨域广义上跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器同源策略限制的一类请求场景。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/11/15/ch9xmnNy7rvYzfo.png">
+<meta property="article:published_time" content="2020-11-15T04:40:08.000Z">
+<meta property="article:modified_time" content="2020-11-15T05:00:27.058Z">
+<meta property="article:author" content="Lawrencezr">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/11/15/ch9xmnNy7rvYzfo.png">
+
+
+<link rel="canonical" href="http://example.com/2020/11/15/%E8%B7%A8%E5%9F%9F%E8%AF%A6%E8%A7%A3/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>跨域详解 | ppf爱敲代码</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">ppf爱敲代码</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是跨域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">浏览器的同源策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">同源策略定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E5%AE%9A%E4%B9%89"><span class="nav-number">2.2.</span> <span class="nav-text">同源定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F%E8%A1%8C%E4%B8%BA"><span class="nav-number">2.3.</span> <span class="nav-text">跨域行为</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">2.4.</span> <span class="nav-text">同源策略的好处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">解决跨域问题的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">3.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-js%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.2.</span> <span class="nav-text">Node.js中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">Nginx反向代理（推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS%E8%B7%A8%E5%9F%9F%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">3.4.</span> <span class="nav-text">CORS跨域资源共享（推荐）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">3.4.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E5%A4%B4%E5%AD%97%E6%AE%B5"><span class="nav-number">3.4.2.</span> <span class="nav-text">CORS头字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CORS%E8%AF%B7%E6%B1%82%E5%88%86%E7%B1%BB"><span class="nav-number">3.4.3.</span> <span class="nav-text">CORS请求分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E5%88%B6"><span class="nav-number">3.4.4.</span> <span class="nav-text">限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8E%E7%AB%AF%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.4.5.</span> <span class="nav-text">后端实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Lawrencezr</p>
+  <div class="site-description" itemprop="description">尽吾志也而不能至者，可以无悔矣。</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lawrencezr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lawrencezr" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:ruizheng1119@gmail.com" title="E-Mail → mailto:ruizheng1119@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/15/%E8%B7%A8%E5%9F%9F%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Lawrencezr">
+      <meta itemprop="description" content="尽吾志也而不能至者，可以无悔矣。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ppf爱敲代码">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          跨域详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2020-11-15 12:40:08 / 修改时间：13:00:27" itemprop="dateCreated datePublished" datetime="2020-11-15T12:40:08+08:00">2020-11-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+        </span>
+    </span>
+
+  
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p><strong>广义上</strong>跨域是一个域下的文档(document)或脚本(script)试图去请求另一个域下的资源，我们通常碰到的是前后端分离项目里的跨域，是由浏览器<strong>同源策略</strong>限制的一类请求场景。</p>
+<a id="more"></a>
+<h2 id="浏览器的同源策略"><a href="#浏览器的同源策略" class="headerlink" title="浏览器的同源策略"></a>浏览器的同源策略</h2><h3 id="同源策略定义"><a href="#同源策略定义" class="headerlink" title="同源策略定义"></a>同源策略定义</h3><p>同源策略/SOP（Same origin policy）是一种约定，由Netscape公司1995年引入浏览器中，它用于限制一个源的文档或者它加载的脚本如何能与另一个源的资源进行交互。</p>
+<h3 id="同源定义"><a href="#同源定义" class="headerlink" title="同源定义"></a>同源定义</h3><p>同源是指两个URL”协议+域名+端口”三者相同，即便两个不同的域名指向同一个ip地址，也非同源。假设有一个URL：<a target="_blank" rel="noopener" href="http://lotus.hotel.test.sankuai.com,/">http://lotus.hotel.test.sankuai.com，</a></p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>是否同源</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="http://lotus.hotel.test.sankuai.com/ability-manager">http://lotus.hotel.test.sankuai.com/ability-manager</a></td>
+<td>是</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://lotus.hotel.test.sankuai.com/ability-manager/index.html">http://lotus.hotel.test.sankuai.com/ability-manager/index.html</a></td>
+<td>是</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://lotus.hotel.test.sankuai.com/secure">https://lotus.hotel.test.sankuai.com/secure</a></td>
+<td>否</td>
+<td>协议不同</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://lotus.hotel.test.sankuai.com:81/ability-manager">http://lotus.hotel.test.sankuai.com:81/ability-manager</a></td>
+<td>否</td>
+<td>端口不同（http://默认端口号为80）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="http://lotus-api.hotel.test.sankuai.com/team-manager">http://lotus-api.hotel.test.sankuai.com/team-manager</a></td>
+<td>否</td>
+<td>域名不同</td>
+</tr>
+</tbody></table>
+<h3 id="跨域行为"><a href="#跨域行为" class="headerlink" title="跨域行为"></a>跨域行为</h3><ul>
+<li><p>  跨域<strong>写操作</strong>（Cross-origin writes）一般是被允许的。例如&lt;a&gt;标签链接，重定向以及表单提交。</p>
+</li>
+<li><p>  跨域<strong>资源嵌入</strong>（Cross-origin embedding）一般是被允许。浏览器的同源策略不对src属性做限制，例如&lt;script&gt;、&lt;img&gt;、&lt;video&gt;、&lt;link&gt;等是可以从不同源的网站中获取到资源的。</p>
+</li>
+<li><p>  跨域<strong>读操作</strong>（Cross-origin reads）*一般是不被允许的。例如ajax请求，dom和js对象的跨域操作。</p>
+</li>
+</ul>
+<h3 id="同源策略的好处"><a href="#同源策略的好处" class="headerlink" title="同源策略的好处"></a>同源策略的好处</h3><p>同源策略是浏览器最核心也最基本的安全功能，如果缺少了同源策略，浏览器很容易受到<a target="_blank" rel="noopener" href="https://tech.meituan.com/2018/09/27/fe-security.html">XSS</a>、<a target="_blank" rel="noopener" href="https://tech.meituan.com/2018/10/11/fe-security-csrf.html">CSRF</a>等攻击。</p>
+<ol>
+<li><p>CSRF（跨站请求伪造）攻击<br> <img src="https://i.loli.net/2020/11/15/ch9xmnNy7rvYzfo.png" alt="CSRF.png"><br> cookie是存储在浏览器中的，当网页发起<strong>http请求</strong>的时候，浏览器首先会检查是否有对应域名的<strong>cookie</strong>，如果有，就会自动添加到<strong>request header</strong>中，发送给服务器。</p>
+ <pre class="line-numbers language-html" data-language="html"><code class="language-html">// get类型CSRF攻击
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://bank.example/api/withdraw?amount=10000&amp;for=hacker<span class="token punctuation">"</span></span> <span class="token punctuation">></span></span>
+
+// post类型CSRF攻击
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://bank.example/api/withdraw<span class="token punctuation">"</span></span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span>POST</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hidden<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>account<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>xiaoming<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hidden<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>amount<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>10000<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hidden<span class="token punctuation">"</span></span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>for<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>hacker<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript"> document<span class="token punctuation">.</span>forms<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">submit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> </span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span> 
+
+// 链接类型CSRF攻击
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://bank.example/api/withdraw?amount=1000&amp;for=hacker<span class="token punctuation">"</span></span> <span class="token attr-name">taget</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>_blank<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  震惊！
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span><span class="token punctuation">/></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>跨域DOM读取</p>
+<p> 有一天，你收到一封邮件，说是你的银行账号有风险，让你赶紧点进<a target="_blank" rel="noopener" href="http://banks.example/%E6%94%B9%E5%AF%86%E7%A0%81%EF%BC%8C%E7%82%B9%E8%BF%9B%E5%8E%BB%E4%B8%80%E7%9C%8B%E6%9E%9C%E7%84%B6%E6%98%AF%E7%86%9F%E6%82%89%E7%9A%84%E9%A1%B5%E9%9D%A2%EF%BC%8C%E7%84%B6%E5%90%8E%E8%BE%93%E5%85%A5%E4%BA%86%E5%AF%86%E7%A0%81%E3%80%82">http://banks.example/改密码，点进去一看果然是熟悉的页面，然后输入了密码。</a></p>
+ <pre class="line-numbers language-html" data-language="html"><code class="language-html">// HTML
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>iframe</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bank<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bank.example<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>iframe</span><span class="token punctuation">></span></span>
+// JS
+// 由于没有同源策略的限制，钓鱼网站可以直接拿到别的网站的Dom
+const iframe = window.frames['bank']
+const node = iframe.document.getElementById('你输入账号密码的Input')<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ol>
+<h2 id="解决跨域问题的方法"><a href="#解决跨域问题的方法" class="headerlink" title="解决跨域问题的方法"></a>解决跨域问题的方法</h2><h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>原理：&lt;script&gt;是可以跨域的，而且在跨域脚本中可以直接回调当前脚本的函数。</p>
+<p>限制：需要创建一个DOM对象并且添加到DOM树，只能用于GET方法。</p>
+<p>是否需要后端配合：是</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token doctype"><span class="token punctuation">&lt;!</span><span class="token doctype-tag">DOCTYPE</span> <span class="token name">html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>测试跨域访问<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>utf-8<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text/javascript<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"><span class="token language-javascript">
+		<span class="token keyword">var</span> <span class="token function-variable function">callbackFunction</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token function">alert</span><span class="token punctuation">(</span><span class="token string">'接口返回的数据是：'</span> <span class="token operator">+</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+	</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text/javascript<span class="token punctuation">"</span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://bank.example/api/userInfo?callbackName=callbackFunction<span class="token punctuation">"</span></span><span class="token punctuation">></span></span><span class="token script"></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 后端返回结果</span>
+<span class="token function">callbackFunction</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token string">"name"</span><span class="token operator">:</span><span class="token string">"zhengrui"</span><span class="token punctuation">,</span> <span class="token string">"gender"</span><span class="token operator">:</span><span class="token string">"male"</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<h3 id="Node-js中间件"><a href="#Node-js中间件" class="headerlink" title="Node.js中间件"></a>Node.js中间件</h3><p>原理：利用node + webpack + webpack-dev-server代理接口跨域。在开发环境下，由于vue渲染服务和接口代理服务都是webpack-dev-server同一个，所以页面与代理接口之间不再跨域，无须设置headers跨域信息了。</p>
+<p>限制：只能用于开发环境，线上环境不行。</p>
+<p>是否需要后端配合：否</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// vue.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    devServer<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        proxy<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+            <span class="token string">'/api'</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                target<span class="token operator">:</span> <span class="token string">'http://www.otherdomain.org'</span><span class="token punctuation">,</span>
+              	<span class="token comment">// 是否跨域</span>
+                changeOrigin<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              	<span class="token comment">// 是否代理websockets</span>
+                ws<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+              	<span class="token comment">// 路径重写</span>
+                pathRewrite<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                  <span class="token string">'^/api'</span><span class="token operator">:</span> <span class="token string">''</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="Nginx反向代理（推荐）"><a href="#Nginx反向代理（推荐）" class="headerlink" title="Nginx反向代理（推荐）"></a>Nginx反向代理（推荐）</h3><p>原理：同源策略是浏览器的安全策略，不是HTTP协议的一部分。服务器端调用HTTP接口只是使用HTTP协议，不会执行JS脚本，不需要同源策略，也就不存在跨越问题。</p>
+<p>实现思路：通过nginx配置一个代理服务器（域名与mydomain相同，端口不同）做跳板机，反向代理访问otherdomain接口，并且可以顺便修改cookie中domain信息，方便当前域cookie写入，实现跨域登录。</p>
+<p>是否需要后端配合：否</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">server <span class="token punctuation">&#123;</span>
+    listen       <span class="token number">81</span><span class="token punctuation">;</span>
+    server_name  www.mydomain.com<span class="token punctuation">;</span>
+
+    location / <span class="token punctuation">&#123;</span>
+        proxy_pass   http://www.otherdomain.com:8080<span class="token punctuation">;</span>  <span class="token comment">#反向代理</span>
+        proxy_cookie_domain www.otherdomain.com www.mydomain.com<span class="token punctuation">;</span> <span class="token comment">#修改cookie里域名</span>
+        index  index.html index.htm<span class="token punctuation">;</span>
+
+        <span class="token comment"># 当用webpack-dev-server等中间件代理接口访问nignx时，此时无浏览器参与，故没有同源限制，下面的跨域配置可不启用</span>
+        add_header Access-Control-Allow-Origin http://www.mydomain.com<span class="token punctuation">;</span>  <span class="token comment">#当前端只跨域不带cookie时，可为*</span>
+        add_header Access-Control-Allow-Credentials <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="CORS跨域资源共享（推荐）"><a href="#CORS跨域资源共享（推荐）" class="headerlink" title="CORS跨域资源共享（推荐）"></a>CORS跨域资源共享（推荐）</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>跨域资源共享(CORS) 是HTTP的一种机制，它使用额外的 HTTP 头来告诉浏览器，可以让运行在一个域上的Web应用去访问来自不同域服务器上的资源。它允许浏览器向跨域服务器，发出XMLHttpRequest请求，从而克服了AJAX只能同源使用的限制。</p>
+<h4 id="CORS头字段"><a href="#CORS头字段" class="headerlink" title="CORS头字段"></a>CORS头字段</h4><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>是否必须</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Access-Control-Allow-Origin</td>
+<td>是</td>
+<td>表示允许跨域访问的域，可以为*</td>
+</tr>
+<tr>
+<td>Access-Control-Allow-Credentials</td>
+<td>否</td>
+<td>它的值是一个布尔值，表示是否允许发送Cookie。默认情况下，Cookie不包括在CORS请求之中。设为true，即表示服务器明确许可，Cookie可以包含在请求中，一起发给服务器。这个值也只能设为true，如果服务器不要浏览器发送Cookie，删除该字段即可。</td>
+</tr>
+<tr>
+<td>Access-Control-Expose-Headers</td>
+<td>否</td>
+<td>CORS请求时，XMLHttpRequest对象的getResponseHeader()方法只能拿到6个基本字段：Cache-Control、Content-Language、Content-Type、Expires、Last-Modified、Pragma。如果想拿到其他字段，就必须在Access-Control-Expose-Headers里面指定。</td>
+</tr>
+<tr>
+<td>Access-Control-Request-Method</td>
+<td>是</td>
+<td>用来列出浏览器的CORS请求会用到哪些HTTP方法</td>
+</tr>
+<tr>
+<td>Access-Control-Request-Headers</td>
+<td>否</td>
+<td>该字段是一个逗号分隔的字符串，指定浏览器CORS请求会额外发送的头信息字段</td>
+</tr>
+<tr>
+<td>Access-Control-Allow-Methods</td>
+<td>是</td>
+<td>它的值是逗号分隔的一个字符串，表明服务器支持的所有跨域请求的方法。注意，返回的是所有支持的方法，而不单是浏览器请求的那个方法。这是为了避免多次”预检”请求。</td>
+</tr>
+<tr>
+<td>Access-Control-Allow-Headers</td>
+<td>若有Access-Control-Request-Headers则必须</td>
+<td>一个逗号分隔的字符串，表明服务器支持的所有头信息字段，不限于浏览器在”预检”中请求的字段。</td>
+</tr>
+<tr>
+<td>Access-Control-Max-Age</td>
+<td>否</td>
+<td>用来指定本次预检请求的有效期，单位为秒，在此期间，不用发出另一条预检请求。</td>
+</tr>
+</tbody></table>
+<h4 id="CORS请求分类"><a href="#CORS请求分类" class="headerlink" title="CORS请求分类"></a>CORS请求分类</h4><p>1、简单请求</p>
+<ul>
+<li>  判断标准：</li>
+</ul>
+<p>1）请求方法是以下三种方法之一：</p>
+<ul>
+<li><p>  HEAD</p>
+</li>
+<li><p>  GET</p>
+</li>
+<li><p>  POST</p>
+</li>
+</ul>
+<p>2）HTTP的头信息不超出以下几种字段：</p>
+<ul>
+<li><p>  Accept</p>
+</li>
+<li><p>  Accept-Language</p>
+</li>
+<li><p>  Content-Language</p>
+</li>
+<li><p>  Last-Event-ID</p>
+</li>
+<li><p>  Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/form-data、text/plain</p>
+</li>
+<li><p>基本流程：</p>
+<p>  1）在请求头中添加<strong>Origin</strong>字段。</p>
+  <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">GET /cors HTTP/1.1
+Origin: http://www.mydomain.com
+Host: www.otherdomain.com
+Accept-Language: en-US
+Connection: keep-alive
+User-Agent: Mozilla/5.0<span class="token punctuation">..</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>  2）服务端返回正常的HTTP回应，浏览器检查Access-Control-Allow-Origin。</p>
+  <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Access-Control-Allow-Origin: http://www.mydomain.com
+Access-Control-Allow-Credentials: <span class="token boolean">true</span>
+Access-Control-Expose-Headers: FooBar
+Content-Type: text/html<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ul>
+<p>2、非简单请求</p>
+<p>不满足简单请求的均为非简单请求。</p>
+<ul>
+<li><p>基本流程</p>
+<p>  1）在正式通信前发送一次预检请求，浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中，以及可以使用哪些HTTP动词和头信息字段，只有得到肯定答复，浏览器才会发出正式的XMLHttpRequest请求，否则就报错。</p>
+  <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">OPTIONS /cors HTTP/1.1
+Origin: http://www.mydomain.com
+Access-Control-Request-Method: PUT
+Access-Control-Request-Headers: X-Custom-Header
+Host: www.otherdomain.com
+Accept-Language: en-US
+Connection: keep-alive
+User-Agent: Mozilla/5.0<span class="token punctuation">..</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>  2）后端收到”预检”请求以后，检查了Origin、Access-Control-Request-Method和Access-Control-Request-Headers字段以后，确认允许跨源请求，就可以做出回应。</p>
+  <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">HTTP/1.1 <span class="token number">200</span> OK
+Date: Mon, 01 Dec <span class="token number">2008</span> 01:15:39 GMT
+Server: Apache/2.0.61 <span class="token punctuation">(</span>Unix<span class="token punctuation">)</span>
+Access-Control-Allow-Origin: http://www.mydomain.com
+Access-Control-Allow-Methods: GET, POST, PUT
+Access-Control-Allow-Headers: X-Custom-Header
+Content-Type: text/html<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8
+Content-Encoding: <span class="token function">gzip</span>
+Content-Length: <span class="token number">0</span>
+Keep-Alive: <span class="token assign-left variable">timeout</span><span class="token operator">=</span><span class="token number">2</span>, <span class="token assign-left variable">max</span><span class="token operator">=</span><span class="token number">100</span>
+Connection: Keep-Alive
+Content-Type: text/plain<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>  3）同简单请求。</p>
+</li>
+</ul>
+<h4 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h4><p>需要浏览器+后端支持。</p>
+<h4 id="后端实现"><a href="#后端实现" class="headerlink" title="后端实现"></a>后端实现</h4><ol>
+<li><p>@CrossOrigin注解</p>
+ <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">// 在controller类上加</span>
+<span class="token annotation punctuation">@CrossOrigin</span><span class="token punctuation">(</span>origins <span class="token operator">=</span> <span class="token string">"http://www.mydomain.com"</span><span class="token punctuation">,</span>allowCredentials <span class="token operator">=</span> <span class="token string">"true"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/api"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ExampleController</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 业务代码</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 在接口上加</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/api"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ExampleController</span> <span class="token punctuation">&#123;</span>
+
+  <span class="token annotation punctuation">@CrossOrigin</span><span class="token punctuation">(</span>origins <span class="token operator">=</span> <span class="token string">"http://www.mydomain.com"</span><span class="token punctuation">,</span>allowCredentials <span class="token operator">=</span> <span class="token string">"true"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"/userInfo"</span><span class="token punctuation">,</span> method <span class="token operator">=</span> <span class="token class-name">RequestMethod</span><span class="token punctuation">.</span>GET<span class="token punctuation">)</span>
+  <span class="token keyword">public</span> <span class="token class-name">APIResult</span> <span class="token function">greetings</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// 接口实现代码</span>
+  <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+ <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Target</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token class-name">ElementType</span><span class="token punctuation">.</span>METHOD<span class="token punctuation">,</span> <span class="token class-name">ElementType</span><span class="token punctuation">.</span>TYPE<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Retention</span><span class="token punctuation">(</span><span class="token class-name">RetentionPolicy</span><span class="token punctuation">.</span>RUNTIME<span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Documented</span>
+<span class="token keyword">public</span> <span class="token annotation punctuation">@interface</span> <span class="token class-name">CrossOrigin</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/** @deprecated */</span>
+    <span class="token annotation punctuation">@Deprecated</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> DEFAULT_ORIGINS <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"*"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token comment">/** @deprecated */</span>
+    <span class="token annotation punctuation">@Deprecated</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> DEFAULT_ALLOWED_HEADERS <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">&#123;</span><span class="token string">"*"</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+    <span class="token comment">/** @deprecated */</span>
+    <span class="token annotation punctuation">@Deprecated</span>
+    <span class="token keyword">boolean</span> DEFAULT_ALLOW_CREDENTIALS <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token comment">/** @deprecated */</span>
+    <span class="token annotation punctuation">@Deprecated</span>
+    <span class="token keyword">long</span> DEFAULT_MAX_AGE <span class="token operator">=</span> <span class="token number">1800L</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 允许来源域名的列表</span>
+    <span class="token annotation punctuation">@AliasFor</span><span class="token punctuation">(</span><span class="token string">"origins"</span><span class="token punctuation">)</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">value</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 允许来源域名的列表</span>
+    <span class="token annotation punctuation">@AliasFor</span><span class="token punctuation">(</span><span class="token string">"value"</span><span class="token punctuation">)</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">origins</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 跨域请求中允许的请求头中的字段类型</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">allowedHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 跨域请求请求头中允许携带的除Cache-Controller、Content-Language、Content-Type、Expires、Last-Modified、Pragma这六个基本字段之外的其他字段信息，对应的是跨域请求 Response 头中的 'Access-control-Expose-Headers'字段值</span>
+    <span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">exposedHeaders</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 跨域HTTP请求中支持的HTTP请求类型</span>
+    <span class="token class-name">RequestMethod</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token function">methods</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 浏览器是否将本域名下的 cookie 信息携带至跨域服务器中</span>
+    <span class="token class-name">String</span> <span class="token function">allowCredentials</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token string">""</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 表示预检请求响应的缓存持续的最大时间</span>
+    <span class="token keyword">long</span> <span class="token function">maxAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">default</span> <span class="token operator">-</span><span class="token number">1L</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>实现WebMvcConfigurer</p>
+<p> WebMvcConfigurer是一个接口，提供很多自定义的拦截器，可以通过重写里面的方法，来实现全局跨域。</p>
+ <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Configuration</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CorsConfiguration</span> <span class="token keyword">implements</span> <span class="token class-name">WebMvcConfigurer</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">addCorsMappings</span><span class="token punctuation">(</span><span class="token class-name">CorsRegistry</span> corsRegistry<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 允许跨域访问资源定义： /api/ 所有资源</span>
+        corsRegistry<span class="token punctuation">.</span><span class="token function">addMapping</span><span class="token punctuation">(</span><span class="token string">"/api/**"</span><span class="token punctuation">)</span>
+                <span class="token comment">// 只允许本地的9000端口访问</span>
+                <span class="token punctuation">.</span><span class="token function">allowedOrigins</span><span class="token punctuation">(</span><span class="token string">"http://localhost:3000"</span><span class="token punctuation">,</span> <span class="token string">"http://www.mydomain.com"</span><span class="token punctuation">)</span>
+                <span class="token comment">// 允许发送Cookie</span>
+                <span class="token punctuation">.</span><span class="token function">allowCredentials</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>
+                <span class="token comment">// 允许所有方法</span>
+                <span class="token punctuation">.</span><span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token string">"GET"</span><span class="token punctuation">,</span> <span class="token string">"POST"</span><span class="token punctuation">,</span> <span class="token string">"PUT"</span><span class="token punctuation">,</span> <span class="token string">"DELETE"</span><span class="token punctuation">,</span> <span class="token string">"HEAD"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> CorsRegistry的的源码</p>
+ <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CorsRegistry</span> <span class="token punctuation">&#123;</span>
+
+   <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">CorsRegistration</span><span class="token punctuation">></span></span> registrations <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  	<span class="token comment">// 向跨域配置list里添加元素</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">addMapping</span><span class="token punctuation">(</span><span class="token class-name">String</span> pathPattern<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token class-name">CorsRegistration</span> registration <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CorsRegistration</span><span class="token punctuation">(</span>pathPattern<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>registrations<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>registration<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> registration<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+
+   <span class="token comment">// 获取跨域配置</span>
+   <span class="token keyword">protected</span> <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">CorsConfiguration</span><span class="token punctuation">></span></span> <span class="token function">getCorsConfigurations</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token class-name">Map</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">,</span> <span class="token class-name">CorsConfiguration</span><span class="token punctuation">></span></span> configs <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">LinkedHashMap</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>registrations<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">CorsRegistration</span> registration <span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>registrations<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+         configs<span class="token punctuation">.</span><span class="token function">put</span><span class="token punctuation">(</span>registration<span class="token punctuation">.</span><span class="token function">getPathPattern</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> registration<span class="token punctuation">.</span><span class="token function">getCorsConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> configs<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p> CorsRegistration的源码</p>
+ <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CorsRegistration</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//传入的路径</span>
+   <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">String</span> pathPattern<span class="token punctuation">;</span>
+    <span class="token comment">//配置信息实体类</span>
+   <span class="token keyword">private</span> <span class="token keyword">final</span> <span class="token class-name">CorsConfiguration</span> config<span class="token punctuation">;</span>
+    <span class="token comment">//构造方法</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span><span class="token punctuation">(</span><span class="token class-name">String</span> pathPattern<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>pathPattern <span class="token operator">=</span> pathPattern<span class="token punctuation">;</span>
+      <span class="token comment">// @CrossOrigin注解里的默认值</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">CorsConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">applyPermitDefaultValues</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//允许哪些源网站访问，默认所有</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">allowedOrigins</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> origins<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setAllowedOrigins</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>origins<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//允许何种方式访问，默认简单方式，即：GET，HEAD，POST</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">allowedMethods</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> methods<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setAllowedMethods</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>methods<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//设置访问header，默认所有</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">allowedHeaders</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> headers<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setAllowedHeaders</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>headers<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//设置response headers，默认没有（什么都不设置）</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">exposedHeaders</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> headers<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setExposedHeaders</span><span class="token punctuation">(</span><span class="token class-name">Arrays</span><span class="token punctuation">.</span><span class="token function">asList</span><span class="token punctuation">(</span>headers<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//是否浏览器应该发送credentials，例如cookies Access-Control-Allow-Credentials</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">allowCredentials</span><span class="token punctuation">(</span><span class="token keyword">boolean</span> allowCredentials<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setAllowCredentials</span><span class="token punctuation">(</span>allowCredentials<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+    <span class="token comment">//设置等待时间，默认1800秒</span>
+   <span class="token keyword">public</span> <span class="token class-name">CorsRegistration</span> <span class="token function">maxAge</span><span class="token punctuation">(</span><span class="token keyword">long</span> maxAge<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span><span class="token function">setMaxAge</span><span class="token punctuation">(</span>maxAge<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+
+   <span class="token keyword">protected</span> <span class="token class-name">String</span> <span class="token function">getPathPattern</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>pathPattern<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+
+   <span class="token keyword">protected</span> <span class="token class-name">CorsConfiguration</span> <span class="token function">getCorsConfiguration</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">;</span>
+   <span class="token punctuation">&#125;</span>
+
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>1、浏览器限制了跨域，是安全性的必然需求。</p>
+<p>2、Jsonp只用于低版本浏览器。</p>
+<p>3、Nginx和CORS是跨域的正解。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>[1] <a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000015597029">https://segmentfault.com/a/1190000015597029</a></p>
+<p>[2] <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2016/04/cors.html">http://www.ruanyifeng.com/blog/2016/04/cors.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/13/hello-world/" rel="prev" title="Hello World">
+                  <i class="fa fa-chevron-left"></i> Hello World
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lawrencezr</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">10k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">9 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
